@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from sqlalchemy import inspect, text
 
 from .config import Config
@@ -10,6 +11,7 @@ from . import models
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    CORS(app, resources={r"/api/*": {"origins": "*", "send_wildcard": True}})
 
     db.init_app(app)
     app.register_blueprint(api_bp, url_prefix="/api")

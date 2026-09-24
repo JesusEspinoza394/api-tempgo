@@ -42,6 +42,15 @@ python run.py
 
 La comprobación inicial está disponible en `http://127.0.0.1:5000/api/health`.
 
+Desde una aplicación frontend usa esta URL base completa:
+
+```javascript
+const API_URL = "http://127.0.0.1:5000/api";
+fetch(`${API_URL}/health`);
+```
+
+No uses solamente `/api/...` si el frontend está siendo servido por Five Server, Live Server u otro servidor diferente al puerto `5000`.
+
 ## Tablas y endpoints
 
 Los modelos corresponden a las tablas existentes en Neon:
