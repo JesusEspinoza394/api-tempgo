@@ -16,6 +16,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     app.register_blueprint(api_bp, url_prefix="/api")
 
+    @app.get("/")
+    def index():
+        return {"name": "TempGo API", "status": "ok", "health": "/api/health"}
+
     @app.cli.command("init-db")
     def init_db():
         db.create_all()

@@ -1,66 +1,208 @@
 <!doctype html>
 <html lang="es">
-<head>
-<meta charset="utf-8">
-<title>Documentación API TempGo</title>
-<style>
-@page { size: A4; margin: 18mm 16mm; }
-:root { --blue: #087fbd; --ink: #243447; --muted: #607286; --line: #d9e3ec; --soft: #eef7fc; }
-* { box-sizing: border-box; }
-body { font-family: Arial, Helvetica, sans-serif; color: var(--ink); line-height: 1.45; font-size: 10.5pt; }
-h1 { color: var(--blue); font-size: 30pt; margin: 0 0 8px; }
-h2 { color: var(--blue); border-bottom: 2px solid var(--line); padding-bottom: 5px; margin-top: 25px; page-break-after: avoid; }
-h3 { color: #31566f; margin-top: 18px; page-break-after: avoid; }
-.cover { min-height: 235mm; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
-.subtitle { font-size: 16pt; color: var(--muted); }
-.meta { margin-top: 35px; padding: 16px; background: var(--soft); border-left: 5px solid var(--blue); }
-.endpoint { border: 1px solid var(--line); border-radius: 5px; padding: 12px 14px; margin: 14px 0; page-break-inside: avoid; }
-.method { display: inline-block; color: white; background: var(--blue); font-weight: bold; padding: 4px 8px; border-radius: 3px; margin-right: 8px; font-size: 9pt; }
-.path { font-family: Consolas, monospace; font-weight: bold; color: #173c52; }
-pre { background: #f4f7f9; border: 1px solid var(--line); border-radius: 4px; padding: 10px; overflow-wrap: anywhere; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 8.5pt; }
-table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; page-break-inside: avoid; }
-th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; }
-th { background: var(--soft); }
-.note { color: var(--muted); font-size: 9pt; }
-footer { color: var(--muted); font-size: 8pt; border-top: 1px solid var(--line); padding-top: 5px; margin-top: 28px; }
-</style>
-</head>
-<body>
-<section class="cover">
-  <h1>TempGo</h1>
-  <div class="subtitle">Documentación de API REST</div>
-  <div class="meta">
-    <strong>Base URL local:</strong> http://127.0.0.1:5000<br>
-    <strong>Prefijo:</strong> /api<br>
-    <strong>Formato:</strong> application/json<br>
-    <strong>Base de datos:</strong> PostgreSQL en Neon
-  </div>
-</section>
+  <head>
+    <meta charset="utf-8" />
+    <title>Documentación API TempGo</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm 16mm;
+      }
+      :root {
+        --blue: #087fbd;
+        --ink: #243447;
+        --muted: #607286;
+        --line: #d9e3ec;
+        --soft: #eef7fc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--ink);
+        line-height: 1.45;
+        font-size: 10.5pt;
+      }
+      h1 {
+        color: var(--blue);
+        font-size: 30pt;
+        margin: 0 0 8px;
+      }
+      h2 {
+        color: var(--blue);
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 5px;
+        margin-top: 25px;
+        page-break-after: avoid;
+      }
+      h3 {
+        color: #31566f;
+        margin-top: 18px;
+        page-break-after: avoid;
+      }
+      .cover {
+        min-height: 235mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        page-break-after: always;
+      }
+      .subtitle {
+        font-size: 16pt;
+        color: var(--muted);
+      }
+      .meta {
+        margin-top: 35px;
+        padding: 16px;
+        background: var(--soft);
+        border-left: 5px solid var(--blue);
+      }
+      .endpoint {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        padding: 12px 14px;
+        margin: 14px 0;
+        page-break-inside: avoid;
+      }
+      .method {
+        display: inline-block;
+        color: white;
+        background: var(--blue);
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 3px;
+        margin-right: 8px;
+        font-size: 9pt;
+      }
+      .path {
+        font-family: Consolas, monospace;
+        font-weight: bold;
+        color: #173c52;
+      }
+      pre {
+        background: #f4f7f9;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 10px;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        font-family: Consolas, monospace;
+        font-size: 8.5pt;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0 14px;
+        page-break-inside: avoid;
+      }
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 6px 8px;
+        text-align: left;
+      }
+      th {
+        background: var(--soft);
+      }
+      .note {
+        color: var(--muted);
+        font-size: 9pt;
+      }
+      footer {
+        color: var(--muted);
+        font-size: 8pt;
+        border-top: 1px solid var(--line);
+        padding-top: 5px;
+        margin-top: 28px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="cover">
+      <h1>TempGo</h1>
+      <div class="subtitle">Documentación de API REST</div>
+      <div class="meta">
+        <strong>Base URL local:</strong> http://127.0.0.1:5000<br />
+        <strong>Prefijo:</strong> /api<br />
+        <strong>Formato:</strong> application/json<br />
+        <strong>Base de datos:</strong> PostgreSQL en Neon
+      </div>
+    </section>
 
-<h2>Resumen de endpoints</h2>
-<table><tr><th>Método</th><th>Ruta</th><th>Descripción</th></tr>
-<tr><td>GET</td><td>/api/health</td><td>Estado de la API y base de datos</td></tr>
-<tr><td>POST</td><td>/api/auth/register</td><td>Registrar usuario con contraseña</td></tr>
-<tr><td>POST</td><td>/api/auth/login</td><td>Iniciar sesión</td></tr>
-<tr><td>GET</td><td>/api/auth/verify</td><td>Validar token</td></tr>
-<tr><td>GET / POST</td><td>/api/congelados</td><td>Alimentos congelados</td></tr>
-<tr><td>GET / POST</td><td>/api/refrigerados</td><td>Alimentos refrigerados</td></tr>
-<tr><td>GET / POST</td><td>/api/verduras</td><td>Frutas y verduras</td></tr>
-<tr><td>GET / POST</td><td>/api/usuarios</td><td>Consultar o crear usuarios</td></tr>
-</table>
+    <h2>Resumen de endpoints</h2>
+    <table>
+      <tr>
+        <th>Método</th>
+        <th>Ruta</th>
+        <th>Descripción</th>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>/api/health</td>
+        <td>Estado de la API y base de datos</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>/api/auth/register</td>
+        <td>Registrar usuario con contraseña</td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>/api/auth/login</td>
+        <td>Iniciar sesión</td>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>/api/auth/verify</td>
+        <td>Validar token</td>
+      </tr>
+      <tr>
+        <td>GET / POST</td>
+        <td>/api/congelados</td>
+        <td>Alimentos congelados</td>
+      </tr>
+      <tr>
+        <td>GET / POST</td>
+        <td>/api/refrigerados</td>
+        <td>Alimentos refrigerados</td>
+      </tr>
+      <tr>
+        <td>GET / POST</td>
+        <td>/api/verduras</td>
+        <td>Frutas y verduras</td>
+      </tr>
+      <tr>
+        <td>GET / POST</td>
+        <td>/api/usuarios</td>
+        <td>Consultar o crear usuarios</td>
+      </tr>
+    </table>
 
-<h2>Autenticación</h2>
-<p>Las contraseñas se almacenan como hash. El registro y el inicio de sesión devuelven un token firmado. Para usar un token se debe enviar el header <code>Authorization: Bearer TOKEN</code>.</p>
+    <h2>Autenticación</h2>
+    <p>
+      Las contraseñas se almacenan como hash. El registro y el inicio de sesión
+      devuelven un token firmado. Para usar un token se debe enviar el header
+      <code>Authorization: Bearer TOKEN</code>.
+    </p>
 
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/auth/register</span></h3>
-<p>Registra un usuario. La contraseña debe tener mínimo 8 caracteres.</p>
-<pre>{
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span
+        ><span class="path">/api/auth/register</span>
+      </h3>
+      <p>Registra un usuario. La contraseña debe tener mínimo 8 caracteres.</p>
+      <pre>
+{
   "nombre": "Ana Pérez",
   "email": "ana@example.com",
   "password": "ClaveSegura123",
   "edad": 25
-}</pre>
-<p><strong>201 Created</strong></p><pre>{
+}</pre
+      >
+      <p><strong>201 Created</strong></p>
+      <pre>
+{
   "usuario": {
     "id": 1,
     "nombre": "Ana Pérez",
@@ -69,71 +211,198 @@ footer { color: var(--muted); font-size: 8pt; border-top: 1px solid var(--line);
     "fecha_creacion": "2026-09-24T15:30:00"
   },
   "token": "TOKEN_GENERADO"
-}</pre>
-<p><strong>Errores:</strong> 400 si faltan campos o la contraseña es corta; 409 si el email ya existe.</p></div>
+}</pre
+      >
+      <p>
+        <strong>Errores:</strong> 400 si faltan campos o la contraseña es corta;
+        409 si el email ya existe.
+      </p>
+    </div>
 
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/auth/login</span></h3>
-<p>Inicia sesión con email y contraseña.</p>
-<pre>{ "email": "ana@example.com", "password": "ClaveSegura123" }</pre>
-<p><strong>200 OK:</strong> devuelve <code>usuario</code> y <code>token</code>.</p>
-<p><strong>Errores:</strong> 400 si faltan datos; 401 si las credenciales son inválidas.</p></div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span
+        ><span class="path">/api/auth/login</span>
+      </h3>
+      <p>Inicia sesión con email y contraseña.</p>
+      <pre>{ "email": "ana@example.com", "password": "ClaveSegura123" }</pre>
+      <p>
+        <strong>200 OK:</strong> devuelve <code>usuario</code> y
+        <code>token</code>.
+      </p>
+      <p>
+        <strong>Errores:</strong> 400 si faltan datos; 401 si las credenciales
+        son inválidas.
+      </p>
+    </div>
 
-<div class="endpoint"><h3><span class="method">GET</span><span class="path">/api/auth/verify</span></h3>
-<p>Verifica el token de sesión.</p><pre>Authorization: Bearer TOKEN_GENERADO</pre>
-<p><strong>200 OK:</strong> devuelve el usuario. Devuelve 401 si el token falta, es inválido o expiró.</p></div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">GET</span
+        ><span class="path">/api/auth/verify</span>
+      </h3>
+      <p>Verifica el token de sesión.</p>
+      <pre>Authorization: Bearer TOKEN_GENERADO</pre>
+      <p>
+        <strong>200 OK:</strong> devuelve el usuario. Devuelve 401 si el token
+        falta, es inválido o expiró.
+      </p>
+    </div>
 
-<h2>Alimentos</h2>
-<p>Todos los endpoints de alimentos reciben <code>alimento_especifico</code>, <code>temperatura</code>, <code>rango</code> opcional y <code>fecha_creacion</code> opcional. La fecha acepta <code>DD/MM/YYYY</code> o formato ISO.</p>
-<table><tr><th>Tabla</th><th>GET</th><th>POST</th><th>Rango válido</th></tr>
-<tr><td>alimentos_congelados</td><td>/api/congelados</td><td>/api/congelados</td><td>-22°C a -18°C</td></tr>
-<tr><td>alimentos_refrigerados</td><td>/api/refrigerados</td><td>/api/refrigerados</td><td>0°C a 4°C</td></tr>
-<tr><td>alimentos_verduras</td><td>/api/verduras</td><td>/api/verduras</td><td>8°C a 12°C</td></tr>
-</table>
+    <h2>Alimentos</h2>
+    <p>
+      Todos los endpoints de alimentos reciben <code>alimento_especifico</code>,
+      <code>temperatura</code>, <code>rango</code> opcional y
+      <code>fecha_creacion</code> opcional. La fecha acepta
+      <code>DD/MM/YYYY</code> o formato ISO.
+    </p>
+    <table>
+      <tr>
+        <th>Tabla</th>
+        <th>GET</th>
+        <th>POST</th>
+        <th>Rango válido</th>
+      </tr>
+      <tr>
+        <td>alimentos_congelados</td>
+        <td>/api/congelados</td>
+        <td>/api/congelados</td>
+        <td>-22°C a -18°C</td>
+      </tr>
+      <tr>
+        <td>alimentos_refrigerados</td>
+        <td>/api/refrigerados</td>
+        <td>/api/refrigerados</td>
+        <td>0°C a 4°C</td>
+      </tr>
+      <tr>
+        <td>alimentos_verduras</td>
+        <td>/api/verduras</td>
+        <td>/api/verduras</td>
+        <td>8°C a 12°C</td>
+      </tr>
+    </table>
 
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/congelados</span></h3>
-<pre>{
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span
+        ><span class="path">/api/congelados</span>
+      </h3>
+      <pre>
+{
   "alimento_especifico": "Pollo",
   "temperatura": -20,
   "rango": "-22°C a -18°C",
   "fecha_creacion": "24/09/2026"
-}</pre></div>
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/refrigerados</span></h3>
-<pre>{
+}</pre
+      >
+    </div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span
+        ><span class="path">/api/refrigerados</span>
+      </h3>
+      <pre>
+{
   "alimento_especifico": "Leche",
   "temperatura": 3,
   "rango": "0°C a 4°C",
   "fecha_creacion": "24/09/2026"
-}</pre></div>
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/verduras</span></h3>
-<pre>{
+}</pre
+      >
+    </div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span><span class="path">/api/verduras</span>
+      </h3>
+      <pre>
+{
   "alimento_especifico": "Lechuga",
   "temperatura": 10,
   "rango": "8°C a 12°C",
   "fecha_creacion": "24/09/2026"
-}</pre></div>
-<p>Los POST devuelven <strong>201 Created</strong> con <code>id</code>, <code>alimento_especifico</code>, <code>temperatura</code>, <code>rango</code> y <code>fecha_creacion</code>. Devuelven 400 si faltan campos, la temperatura no es numérica, está fuera del rango o la fecha no es válida.</p>
+}</pre
+      >
+    </div>
+    <p>
+      Los POST devuelven <strong>201 Created</strong> con <code>id</code>,
+      <code>alimento_especifico</code>, <code>temperatura</code>,
+      <code>rango</code> y <code>fecha_creacion</code>. Devuelven 400 si faltan
+      campos, la temperatura no es numérica, está fuera del rango o la fecha no
+      es válida.
+    </p>
 
-<h3>Ejemplo de respuesta de alimento</h3>
-<pre>{
+    <h3>Ejemplo de respuesta de alimento</h3>
+    <pre>
+{
   "id": 1,
   "alimento_especifico": "Pollo",
   "temperatura": -20,
   "rango": "-22°C a -18°C",
   "fecha_creacion": "2026-09-24T00:00:00"
-}</pre>
+}</pre
+    >
 
-<h2>Usuarios</h2>
-<div class="endpoint"><h3><span class="method">GET</span><span class="path">/api/usuarios</span></h3>
-<p>Lista los usuarios. Nunca devuelve contraseñas ni hashes.</p><p><strong>200 OK:</strong> devuelve un arreglo de usuarios.</p></div>
-<div class="endpoint"><h3><span class="method">POST</span><span class="path">/api/usuarios</span></h3>
-<p>Crea un usuario tradicional sin contraseña. Para usuarios que necesitan iniciar sesión, usar <code>/api/auth/register</code>.</p>
-<pre>{ "nombre": "Carlos Gómez", "email": "carlos@example.com", "edad": 30 }</pre>
-<p><strong>201 Created</strong>. Devuelve 400 si faltan nombre o email y 409 si el email ya existe.</p></div>
+    <h2>Usuarios</h2>
+    <div class="endpoint">
+      <h3>
+        <span class="method">GET</span><span class="path">/api/usuarios</span>
+      </h3>
+      <p>Lista los usuarios. Nunca devuelve contraseñas ni hashes.</p>
+      <p><strong>200 OK:</strong> devuelve un arreglo de usuarios.</p>
+    </div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span><span class="path">/api/usuarios</span>
+      </h3>
+      <p>
+        Crea un usuario tradicional sin contraseña. Para usuarios que necesitan
+        iniciar sesión, usar <code>/api/auth/register</code>.
+      </p>
+      <pre>
+{ "nombre": "Carlos Gómez", "email": "carlos@example.com", "edad": 30 }</pre
+      >
+      <p>
+        <strong>201 Created</strong>. Devuelve 400 si faltan nombre o email y
+        409 si el email ya existe.
+      </p>
+    </div>
 
-<h2>Códigos HTTP</h2>
-<table><tr><th>Código</th><th>Significado</th></tr>
-<tr><td>200</td><td>Solicitud exitosa</td></tr><tr><td>201</td><td>Registro creado</td></tr><tr><td>400</td><td>Datos incompletos o inválidos</td></tr><tr><td>401</td><td>No autorizado o token inválido</td></tr><tr><td>404</td><td>Recurso no encontrado</td></tr><tr><td>409</td><td>Email duplicado</td></tr><tr><td>503</td><td>Base de datos no disponible</td></tr>
-</table>
-<footer>TempGo API · Documentación generada el 24/09/2026</footer>
-</body>
+    <h2>Códigos HTTP</h2>
+    <table>
+      <tr>
+        <th>Código</th>
+        <th>Significado</th>
+      </tr>
+      <tr>
+        <td>200</td>
+        <td>Solicitud exitosa</td>
+      </tr>
+      <tr>
+        <td>201</td>
+        <td>Registro creado</td>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Datos incompletos o inválidos</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>No autorizado o token inválido</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Recurso no encontrado</td>
+      </tr>
+      <tr>
+        <td>409</td>
+        <td>Email duplicado</td>
+      </tr>
+      <tr>
+        <td>503</td>
+        <td>Base de datos no disponible</td>
+      </tr>
+    </table>
+    <footer>TempGo API · Documentación generada el 24/09/2026</footer>
+  </body>
 </html>
