@@ -102,21 +102,3 @@ python -m flask init-db
 ```
 
 La aplicación no crea tablas automáticamente al arrancar.
-
-## Recuperación de contraseña
-
-Configura estas variables en el servicio de API de Render y en el archivo `.env`
-local. `FRONTEND_URL` debe ser el origen publicado del frontend, sin una barra
-final. `SMTP_FROM` debe ser una dirección autorizada por tu proveedor de correo.
-
-- `FRONTEND_URL`
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`
-- `SMTP_USE_TLS=true` para STARTTLS (puerto 587), o `SMTP_USE_SSL=true` para
-  TLS implícito (puerto 465), pero no ambos.
-- `PASSWORD_RESET_TOKEN_MAX_AGE=1800` (30 minutos)
-
-La API expone `POST /api/auth/forgot-password` con `{ "email": "..." }` y
-`POST /api/auth/reset-password` con `{ "token": "...", "password": "..." }`.
-El primer endpoint siempre responde con un mensaje genérico cuando el servicio
-de correo está configurado, tanto si la cuenta existe como si no. El enlace es
-de un solo uso y vence según `PASSWORD_RESET_TOKEN_MAX_AGE`.
