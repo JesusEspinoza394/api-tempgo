@@ -1,7 +1,9 @@
 import unittest
+from datetime import datetime
 
 from app import create_app
 from app.extensions import db
+from app.models import AlimentoRefrigerado
 
 
 class TestConfig:
@@ -31,11 +33,15 @@ class FoodResourcesTestCase(unittest.TestCase):
     def test_creates_food_in_each_category(self):
         payloads = {
             "congelados": {"alimento_especifico": "Pollo", "temperatura": -20},
-            "refrigerados": {"alimento_especifico": "Leche", "temperatura": 3},
+            "refrigerados": {
+                "alimento_especifico": "Leche",
+                "temperatura": 3,
+                "fecha_creacion": "2026-09-24T11:15:30",
+            },
             "verduras": {
                 "alimento_especifico": "Lechuga",
                 "temperatura": 10,
-                "fecha_creacion": "24/09/2026",
+                "fecha_creacion": "2026-09-24T15:30:45",
             },
         }
 
@@ -47,7 +53,43 @@ class FoodResourcesTestCase(unittest.TestCase):
             self.assertIn("rango", response.json)
 
         verduras = self.client.get("/api/verduras")
-        self.assertEqual(verduras.json[0]["fecha_creacion"], "2026-09-24T00:00:00")
+        self.assertEqual(verduras.json[0]["fecha_creacion"], "2026-09-24T15:30:45")
+
+        saved_food = db.session.scalar(
+            db.select(AlimentoRefrigerado).where(
+                AlimentoRefrigerado.alimento_especifico == "Leche"
+            )
+        )
+        self.assertEqual(
+            saved_food.fecha_creacion,
+            datetime.fromisoformat("2026-09-24T11:15:30"),
+        )
+
+    def test_rejects_date_without_time(self):
+        response = self.client.post(
+            "/api/congelados",
+            json={
+                "alimento_especifico": "Pescado",
+                "temperatura": -20,
+                "fecha_creacion": "2026-09-24",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("fecha y hora", response.json["error"])
+
+    def test_normalizes_timezone_aware_datetime_to_utc(self):
+        response = self.client.post(
+            "/api/refrigerados",
+            json={
+                "alimento_especifico": "Yogur",
+                "temperatura": 3,
+                "fecha_creacion": "2026-09-24T18:30:00+03:00",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json["fecha_creacion"], "2026-09-24T15:30:00")
 
     def test_rejects_temperature_outside_category_range(self):
         response = self.client.post(

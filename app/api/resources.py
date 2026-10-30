@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy.exc import IntegrityError
@@ -91,14 +91,23 @@ def create_food(resource):
         }), 400
 
     created_at = datetime.utcnow()
-    if data.get("fecha_creacion"):
+    if "fecha_creacion" in data:
+        date_value = data["fecha_creacion"]
+        if (
+            not isinstance(date_value, str)
+            or ("T" not in date_value and " " not in date_value)
+        ):
+            return jsonify({
+                "error": "fecha_creacion debe incluir fecha y hora en formato ISO 8601"
+            }), 400
         try:
-            created_at = datetime.fromisoformat(data["fecha_creacion"])
+            created_at = datetime.fromisoformat(date_value)
         except (TypeError, ValueError):
-            try:
-                created_at = datetime.strptime(data["fecha_creacion"], "%d/%m/%Y")
-            except (TypeError, ValueError):
-                return jsonify({"error": "fecha_creacion debe usar ISO o DD/MM/YYYY"}), 400
+            return jsonify({
+                "error": "fecha_creacion debe incluir fecha y hora en formato ISO 8601"
+            }), 400
+        if created_at.tzinfo is not None:
+            created_at = created_at.astimezone(timezone.utc).replace(tzinfo=None)
 
     food = model(
         alimento_especifico=data["alimento_especifico"],

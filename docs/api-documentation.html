@@ -253,8 +253,10 @@
     <p>
       Todos los endpoints de alimentos reciben <code>alimento_especifico</code>,
       <code>temperatura</code>, <code>rango</code> opcional y
-      <code>fecha_creacion</code> opcional. La fecha acepta
-      <code>DD/MM/YYYY</code> o formato ISO.
+      <code>fecha_creacion</code> opcional como fecha y hora ISO 8601
+      (por ejemplo, <code>2026-09-24T15:30:00</code>). Si incluye zona horaria,
+      se convierte a UTC antes de guardarse en la base de datos. Si se omite,
+      se usa la fecha y hora UTC actual.
     </p>
     <table>
       <tr>
@@ -293,7 +295,7 @@
   "alimento_especifico": "Pollo",
   "temperatura": -20,
   "rango": "-22°C a -18°C",
-  "fecha_creacion": "24/09/2026"
+  "fecha_creacion": "2026-09-24T15:30:00"
 }</pre
       >
     </div>
@@ -307,7 +309,7 @@
   "alimento_especifico": "Leche",
   "temperatura": 3,
   "rango": "0°C a 4°C",
-  "fecha_creacion": "24/09/2026"
+  "fecha_creacion": "2026-09-24T15:30:00"
 }</pre
       >
     </div>
@@ -320,7 +322,7 @@
   "alimento_especifico": "Lechuga",
   "temperatura": 10,
   "rango": "8°C a 12°C",
-  "fecha_creacion": "24/09/2026"
+  "fecha_creacion": "2026-09-24T15:30:00"
 }</pre
       >
     </div>
@@ -339,7 +341,7 @@
   "alimento_especifico": "Pollo",
   "temperatura": -20,
   "rango": "-22°C a -18°C",
-  "fecha_creacion": "2026-09-24T00:00:00"
+  "fecha_creacion": "2026-09-24T15:30:00"
 }</pre
     >
 
