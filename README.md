@@ -58,17 +58,17 @@ Los modelos corresponden a las tablas existentes en Neon:
 
 - `alimentos_congelados`: `/api/congelados`
 - `alimentos_refrigerados`: `/api/refrigerados`
-- `alimentos_verduras`: `/api/verduras`
+- `alimentos_verduras` (Testeo): `/api/verduras`
 - `usuarios`: `/api/usuarios`
 
 Cada recurso tiene un endpoint `GET` para listar y un endpoint `POST` para crear registros.
 
 ## Lecturas del Arduino HC-05
 
-El HC-05 transmite líneas JSON como esta:
+El sketch Arduino transmite una línea JSON cada 10 segundos:
 
 ```json
-{"producto":"Refrigerados","temperatura":3.2,"estado":"OPTIMO"}
+{"producto":"Frutas_Verduras","temperatura":10.5,"estado":"OPTIMO","tempMin":8.0,"tempMax":12.0,"perfil":"2"}
 ```
 
 La API recibe las lecturas en `POST /api/lecturas` y las guarda en la tabla
@@ -77,19 +77,37 @@ La API recibe las lecturas en `POST /api/lecturas` y las guarda en la tabla
 verifica que el estado coincida con la temperatura y el perfil:
 
 - `Refrigerados`: 0 a 4 °C
-- `FrutasVerduras`: 8 a 12 °C
-- `Congelados`: -22 a -16 °C (rango del sketch Arduino)
+- `Frutas_Verduras`: 8 a 12 °C
+- `Prueba`: 29 a 31 °C
 
-Después de desplegar este cambio, crea la tabla nueva en Neon una sola vez. En
-la Shell de Render ejecuta:
+También se guardan `tempMin`, `tempMax` y `perfil` (`"1"`, `"2"` o `"3"`).
+La API verifica que estos valores coincidan con el producto. Las columnas
+`temp_min`, `temp_max` y `perfil` permiten `NULL` para mantener las lecturas
+antiguas que no traían esos campos.
+
+La tabla queda con este esquema:
+
+| Columna Neon | Tipo | Contenido |
+|---|---|---|
+| `id` | `INTEGER` | Identificador generado por la base de datos |
+| `producto` | `VARCHAR(50)` | Perfil enviado por Arduino |
+| `temperatura` | `DOUBLE PRECISION` | Temperatura en °C |
+| `estado` | `VARCHAR(10)` | `OPTIMO` o `ALERTA` |
+| `temp_min` | `DOUBLE PRECISION`, nullable | Límite inferior enviado por Arduino |
+| `temp_max` | `DOUBLE PRECISION`, nullable | Límite superior enviado por Arduino |
+| `perfil` | `VARCHAR(1)`, nullable | Opción seleccionada: `"1"`, `"2"` o `"3"` |
+| `fecha_creacion` | `TIMESTAMP WITH TIME ZONE` | Fecha UTC asignada por la API |
+
+Después de desplegar el cambio, ejecuta una vez en la Shell de Render para crear
+la tabla si no existe y agregar las columnas nuevas sin borrar datos:
 
 ```bash
-python -m flask --app run init-db
+python -m flask --app run migrate-telemetry
 ```
 
 Si no tienes disponible la Shell de Render, ejecuta el mismo comando localmente
 con `.env` apuntando a la base Neon. No publiques esa URL ni sus credenciales en
-GitHub. `init-db` crea las tablas que falten y no borra los datos existentes.
+GitHub.
 
 ### Arquitectura Android: Bluetooth → HTTP → API → página
 
@@ -122,7 +140,7 @@ que debe generar Android para cada lectura:
 POST https://TU-API.onrender.com/api/lecturas
 Content-Type: application/json
 
-{"producto":"Refrigerados","temperatura":3.2,"estado":"OPTIMO"}
+{"producto":"Refrigerados","temperatura":3.2,"estado":"OPTIMO","tempMin":0.0,"tempMax":4.0,"perfil":"1"}
 ```
 
 La respuesta correcta es `201 Created`. Reemplaza `TU-API` por el nombre real
@@ -131,7 +149,7 @@ del servicio en Render. Para probar manualmente el endpoint desde una consola:
 ```bash
 curl -X POST "https://TU-API.onrender.com/api/lecturas" \
   -H "Content-Type: application/json" \
-  -d '{"producto":"Refrigerados","temperatura":3.2,"estado":"OPTIMO"}'
+  -d '{"producto":"Refrigerados","temperatura":3.2,"estado":"OPTIMO","tempMin":0.0,"tempMax":4.0,"perfil":"1"}'
 ```
 
 La página TempGo no recibe Bluetooth directamente: consulta las lecturas ya

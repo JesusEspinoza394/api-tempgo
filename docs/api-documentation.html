@@ -270,17 +270,28 @@
       </h3>
       <pre>
 {
-  "producto": "Refrigerados",
-  "temperatura": 3.2,
-  "estado": "OPTIMO"
+  "producto": "Frutas_Verduras",
+  "temperatura": 10.5,
+  "estado": "OPTIMO",
+  "tempMin": 8.0,
+  "tempMax": 12.0,
+  "perfil": "2"
 }</pre
       >
       <p>
-        Los productos admitidos son <code>Refrigerados</code> (0 a 4 °C),
-        <code>FrutasVerduras</code> (8 a 12 °C) y
-        <code>Congelados</code> (-22 a -16 °C). Devuelve 201 con la lectura
-        guardada, incluyendo <code>id</code> y <code>fecha_creacion</code> UTC.
-        Devuelve 400 si faltan datos o el estado no coincide con la temperatura.
+        Los perfiles admitidos son <code>Refrigerados</code> (0 a 4 °C, perfil
+        <code>1</code>), <code>Frutas_Verduras</code> (8 a 12 °C, perfil
+        <code>2</code>) y <code>Prueba</code> (29 a 31 °C, perfil
+        <code>3</code>). El JSON también debe incluir <code>tempMin</code>,
+        <code>tempMax</code> y <code>perfil</code>. Devuelve 201 con la lectura
+        guardada y la fecha UTC; devuelve 400 si el perfil, los límites o el
+        estado no coinciden con la temperatura.
+      </p>
+      <p>
+        La tabla <code>lecturas_temperatura</code> conserva
+        <code>producto</code>, <code>temperatura</code>, <code>estado</code>,
+        <code>temp_min</code>, <code>temp_max</code>, <code>perfil</code> y
+        <code>fecha_creacion</code>, además del identificador <code>id</code>.
       </p>
     </div>
     <div class="endpoint">

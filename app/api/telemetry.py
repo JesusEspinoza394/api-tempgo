@@ -8,10 +8,13 @@ from ..models import LecturaTemperatura
 
 telemetry_bp = Blueprint("telemetry", __name__)
 
-PRODUCT_RANGES = {
-    "Refrigerados": (0, 4),
-    "FrutasVerduras": (8, 12),
-    "Congelados": (-22, -16),
+PRODUCT_PROFILES = {
+    "Refrigerados": ("1", 0, 4),
+    "Frutas_Verduras": ("2", 8, 12),
+    "Prueba": ("3", 29, 31),
+    "FrutasVerduras": ("2", 28, 33),
+    "Testeo": ("3", 28, 33),
+    "Congelados": ("3", -22, -16),
 }
 
 
@@ -25,6 +28,9 @@ def reading_to_dict(reading):
         "producto": reading.producto,
         "temperatura": reading.temperatura,
         "estado": reading.estado,
+        "tempMin": reading.temp_min,
+        "tempMax": reading.temp_max,
+        "perfil": reading.perfil,
         "fecha_creacion": created_at.astimezone(timezone.utc).isoformat(),
     }
 
@@ -59,9 +65,12 @@ def readings():
         return jsonify({"error": "Faltan campos requeridos", "campos": missing_fields}), 400
 
     product = data["producto"]
-    if not isinstance(product, str) or product not in PRODUCT_RANGES:
+    if not isinstance(product, str) or product not in PRODUCT_PROFILES:
         return jsonify({
-            "error": "producto debe ser Refrigerados, FrutasVerduras o Congelados"
+            "error": (
+                "producto debe ser Refrigerados, Frutas_Verduras, Prueba, "
+                "FrutasVerduras, Testeo o Congelados"
+            )
         }), 400
 
     raw_temperature = data["temperatura"]
@@ -73,7 +82,7 @@ def readings():
     if not -55 <= temperature <= 125:
         return jsonify({"error": "temperatura fuera del rango del sensor DS18B20"}), 400
 
-    minimum, maximum = PRODUCT_RANGES[product]
+    expected_profile, minimum, maximum = PRODUCT_PROFILES[product]
     expected_state = "OPTIMO" if minimum <= temperature <= maximum else "ALERTA"
     if data["estado"] != expected_state:
         return jsonify({
@@ -81,10 +90,50 @@ def readings():
             "estado_esperado": expected_state,
         }), 400
 
+    metadata_fields = ("tempMin", "tempMax", "perfil")
+    supplied_metadata = [field in data for field in metadata_fields]
+    if any(supplied_metadata) and not all(supplied_metadata):
+        return jsonify({
+            "error": "tempMin, tempMax y perfil deben enviarse juntos"
+        }), 400
+
+    temp_min = None
+    temp_max = None
+    profile = None
+    if all(supplied_metadata):
+        raw_min = data["tempMin"]
+        raw_max = data["tempMax"]
+        profile = data["perfil"]
+        if (
+            isinstance(raw_min, bool)
+            or not isinstance(raw_min, (int, float))
+            or isinstance(raw_max, bool)
+            or not isinstance(raw_max, (int, float))
+            or not math.isfinite(raw_min)
+            or not math.isfinite(raw_max)
+        ):
+            return jsonify({"error": "tempMin y tempMax deben ser números finitos"}), 400
+        if raw_min != minimum or raw_max != maximum:
+            return jsonify({
+                "error": "tempMin y tempMax no coinciden con el perfil del producto",
+                "tempMin_esperado": minimum,
+                "tempMax_esperado": maximum,
+            }), 400
+        if profile != expected_profile:
+            return jsonify({
+                "error": "perfil no coincide con el producto",
+                "perfil_esperado": expected_profile,
+            }), 400
+        temp_min = float(raw_min)
+        temp_max = float(raw_max)
+
     reading = LecturaTemperatura(
         producto=product,
         temperatura=temperature,
         estado=expected_state,
+        temp_min=temp_min,
+        temp_max=temp_max,
+        perfil=profile,
         fecha_creacion=datetime.now(timezone.utc),
     )
     db.session.add(reading)

@@ -43,6 +43,9 @@ class LecturaTemperatura(db.Model):
     producto = db.Column(db.String(50), nullable=False)
     temperatura = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(10), nullable=False)
+    temp_min = db.Column(db.Float, nullable=True)
+    temp_max = db.Column(db.Float, nullable=True)
+    perfil = db.Column(db.String(1), nullable=True)
     fecha_creacion = db.Column(
         db.DateTime(timezone=True),
         nullable=False,

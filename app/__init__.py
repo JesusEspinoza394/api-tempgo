@@ -34,4 +34,26 @@ def create_app(config_class=Config):
                 connection.execute(text("ALTER TABLE usuarios ADD COLUMN password_hash VARCHAR(255)"))
         print("Columna de autenticación verificada correctamente.")
 
+    @app.cli.command("migrate-telemetry")
+    def migrate_telemetry():
+        db.create_all()
+        inspector = inspect(db.engine)
+        columns = {
+            column["name"]
+            for column in inspector.get_columns("lecturas_temperatura")
+        }
+        additions = {
+            "temp_min": "FLOAT",
+            "temp_max": "FLOAT",
+            "perfil": "VARCHAR(1)",
+        }
+        with db.engine.begin() as connection:
+            for column, column_type in additions.items():
+                if column not in columns:
+                    connection.execute(text(
+                        f"ALTER TABLE lecturas_temperatura "
+                        f"ADD COLUMN {column} {column_type}"
+                    ))
+        print("Columnas de lecturas de temperatura verificadas correctamente.")
+
     return app
