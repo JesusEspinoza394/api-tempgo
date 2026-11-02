@@ -3,7 +3,7 @@ from datetime import datetime
 
 from app import create_app
 from app.extensions import db
-from app.models import AlimentoRefrigerado
+from app.models import AlimentoRefrigerado, LecturaTemperatura
 
 
 class TestConfig:
@@ -99,6 +99,56 @@ class FoodResourcesTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json["rango_permitido"], "-22°C a -18°C")
+
+    def test_receives_and_persists_arduino_telemetry(self):
+        response = self.client.post(
+            "/api/lecturas",
+            json={
+                "producto": "FrutasVerduras",
+                "temperatura": 10.4,
+                "estado": "OPTIMO",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json["producto"], "FrutasVerduras")
+        self.assertEqual(response.json["temperatura"], 10.4)
+        self.assertEqual(response.json["estado"], "OPTIMO")
+        self.assertTrue(response.json["fecha_creacion"].endswith("+00:00"))
+
+        saved_reading = db.session.get(LecturaTemperatura, response.json["id"])
+        self.assertEqual(saved_reading.producto, "FrutasVerduras")
+        self.assertEqual(saved_reading.estado, "OPTIMO")
+
+        latest = self.client.get("/api/lecturas?limit=1")
+        self.assertEqual(latest.status_code, 200)
+        self.assertEqual(latest.json[0]["id"], response.json["id"])
+
+    def test_rejects_telemetry_with_inconsistent_state(self):
+        response = self.client.post(
+            "/api/lecturas",
+            json={
+                "producto": "Refrigerados",
+                "temperatura": 8,
+                "estado": "OPTIMO",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json["estado_esperado"], "ALERTA")
+
+    def test_rejects_disconnected_sensor_reading(self):
+        response = self.client.post(
+            "/api/lecturas",
+            json={
+                "producto": "Refrigerados",
+                "temperatura": -127,
+                "estado": "ALERTA",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("DS18B20", response.json["error"])
 
 
 if __name__ == "__main__":

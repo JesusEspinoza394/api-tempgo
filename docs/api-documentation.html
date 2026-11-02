@@ -177,6 +177,11 @@
         <td>/api/usuarios</td>
         <td>Consultar o crear usuarios</td>
       </tr>
+      <tr>
+        <td>GET / POST</td>
+        <td>/api/lecturas</td>
+        <td>Consultar o recibir lecturas del HC-05</td>
+      </tr>
     </table>
 
     <h2>Autenticación</h2>
@@ -248,6 +253,50 @@
         falta, es inválido o expiró.
       </p>
     </div>
+
+    <h2>Lecturas del Arduino HC-05</h2>
+    <p>
+      Flujo: Arduino + HC-05 → Bluetooth clásico → Serial Bluetooth Terminal
+      (Android) → puente Android que envía HTTP POST → API en Render → tabla
+      <code>lecturas_temperatura</code> en Neon → página web consulta la API.
+      La página no se conecta directamente al HC-05; recibe los datos guardados
+      mediante HTTP. La API registra la fecha de recepción en UTC y valida el
+      estado según el perfil.
+    </p>
+    <div class="endpoint">
+      <h3>
+        <span class="method">POST</span
+        ><span class="path">/api/lecturas</span>
+      </h3>
+      <pre>
+{
+  "producto": "Refrigerados",
+  "temperatura": 3.2,
+  "estado": "OPTIMO"
+}</pre
+      >
+      <p>
+        Los productos admitidos son <code>Refrigerados</code> (0 a 4 °C),
+        <code>FrutasVerduras</code> (8 a 12 °C) y
+        <code>Congelados</code> (-22 a -16 °C). Devuelve 201 con la lectura
+        guardada, incluyendo <code>id</code> y <code>fecha_creacion</code> UTC.
+        Devuelve 400 si faltan datos o el estado no coincide con la temperatura.
+      </p>
+    </div>
+    <div class="endpoint">
+      <h3>
+        <span class="method">GET</span
+        ><span class="path">/api/lecturas?limit=100</span>
+      </h3>
+      <p>Devuelve las lecturas más recientes; acepta de 1 a 500 resultados.</p>
+    </div>
+    <p class="note">
+      Serial Bluetooth Terminal muestra los datos Bluetooth. Para el envío
+      automático, Android necesita que esa aplicación tenga una función HTTP o
+      una aplicación/automatización puente que envíe cada línea JSON mediante
+      POST. Si solo muestra o guarda texto, no envía datos a la API por sí sola.
+      El puente debe ignorar las líneas de menú que no sean JSON.
+    </p>
 
     <h2>Alimentos</h2>
     <p>
