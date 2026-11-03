@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
 import math
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
+from sqlalchemy.exc import SQLAlchemyError
 
 from ..extensions import db
 from ..models import LecturaTemperatura
@@ -45,14 +46,26 @@ def readings():
         if not 1 <= limit <= 500:
             return jsonify({"error": "limit debe estar entre 1 y 500"}), 400
 
-        results = db.session.scalars(
-            db.select(LecturaTemperatura)
-            .order_by(
-                LecturaTemperatura.fecha_creacion.desc(),
-                LecturaTemperatura.id.desc(),
+        try:
+            results = db.session.scalars(
+                db.select(LecturaTemperatura)
+                .order_by(
+                    LecturaTemperatura.fecha_creacion.desc(),
+                    LecturaTemperatura.id.desc(),
+                )
+                .limit(limit)
+            ).all()
+        except SQLAlchemyError:
+            db.session.rollback()
+            current_app.logger.exception(
+                "No se pudieron consultar las lecturas de temperatura."
             )
-            .limit(limit)
-        ).all()
+            return jsonify({
+                "error": (
+                    "No se pudieron consultar las lecturas. "
+                    "Verifica el esquema con la migración migrate-telemetry."
+                )
+            }), 503
         return jsonify([reading_to_dict(item) for item in results])
 
     data = request.get_json(silent=True)

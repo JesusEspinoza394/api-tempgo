@@ -42,6 +42,9 @@ python run.py
 ```
 
 La comprobación inicial está disponible en `http://127.0.0.1:5000/api/health`.
+Con Neon configurado, responde `200` solo si la tabla
+`lecturas_temperatura` y las columnas que usa la API están listas. Si falta la
+tabla o alguna columna de migración, responde `503` e indica qué falta.
 
 Desde una aplicación frontend usa esta URL base completa:
 
@@ -104,6 +107,11 @@ la tabla si no existe y agregar las columnas nuevas sin borrar datos:
 ```bash
 python -m flask --app run migrate-telemetry
 ```
+
+Si `/api/health` devuelve `telemetry: "schema_incomplete"` o
+`telemetry: "table_missing"`, ejecuta ese comando desde la Shell del servicio
+Render y vuelve a comprobar `/api/health` antes de consultar
+`/api/lecturas?limit=5`.
 
 Si no tienes disponible la Shell de Render, ejecuta el mismo comando localmente
 con `.env` apuntando a la base Neon. No publiques esa URL ni sus credenciales en

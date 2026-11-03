@@ -140,7 +140,7 @@
       <tr>
         <td>GET</td>
         <td>/api/health</td>
-        <td>Estado de la API y base de datos</td>
+        <td>Estado de la API, Neon y esquema de lecturas</td>
       </tr>
       <tr>
         <td>POST</td>
@@ -183,6 +183,14 @@
         <td>Consultar o recibir lecturas del HC-05</td>
       </tr>
     </table>
+    <p>
+      Con la base de datos configurada, <code>/api/health</code> devuelve
+      <code>200</code> cuando Neon y el esquema de
+      <code>lecturas_temperatura</code> están listos. Si falta la tabla o alguna
+      columna requerida, responde <code>503</code> e informa el esquema faltante;
+      ejecuta <code>python -m flask --app run migrate-telemetry</code> en la
+      Shell de Render y vuelve a comprobar la ruta.
+    </p>
 
     <h2>Autenticación</h2>
     <p>
