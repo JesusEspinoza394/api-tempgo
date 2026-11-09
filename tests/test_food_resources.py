@@ -104,20 +104,21 @@ class FoodResourcesTestCase(unittest.TestCase):
         self.assertEqual(response.json["rango_permitido"], "-22°C a -18°C")
 
     def test_accepts_testeo_range_boundaries_and_rejects_outside_temperature(self):
-        for temperature in (28, 33):
+        for temperature in (29, 31):
             response = self.client.post(
                 "/api/verduras",
                 json={"alimento_especifico": "Manzana", "temperatura": temperature},
             )
             self.assertEqual(response.status_code, 201)
-            self.assertEqual(response.json["rango"], "28°C a 33°C")
+            self.assertEqual(response.json["rango"], "29°C a 31°C")
 
-        response = self.client.post(
-            "/api/verduras",
-            json={"alimento_especifico": "Manzana", "temperatura": 27.9},
-        )
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json["rango_permitido"], "28°C a 33°C")
+        for temperature in (28.9, 31.1):
+            response = self.client.post(
+                "/api/verduras",
+                json={"alimento_especifico": "Manzana", "temperatura": temperature},
+            )
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json["rango_permitido"], "29°C a 31°C")
 
     def test_receives_and_persists_arduino_telemetry(self):
         response = self.client.post(
@@ -146,7 +147,7 @@ class FoodResourcesTestCase(unittest.TestCase):
     def test_accepts_testeo_telemetry_alias(self):
         response = self.client.post(
             "/api/lecturas",
-            json={"producto": "Testeo", "temperatura": 28, "estado": "OPTIMO"},
+            json={"producto": "Testeo", "temperatura": 29, "estado": "OPTIMO"},
         )
 
         self.assertEqual(response.status_code, 201)

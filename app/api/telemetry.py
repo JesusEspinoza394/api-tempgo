@@ -14,7 +14,7 @@ PRODUCT_PROFILES = {
     "Frutas_Verduras": ("2", 8, 12),
     "Prueba": ("3", 29, 31),
     "FrutasVerduras": ("2", 28, 33),
-    "Testeo": ("3", 28, 33),
+    "Testeo": ("3", 29, 31),
     "Congelados": ("3", -22, -16),
 }
 

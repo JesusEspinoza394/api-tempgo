@@ -28,9 +28,9 @@ FOOD_RESOURCES = {
     },
     "verduras": {
         "model": AlimentoVerdura,
-        "min_temperature": 28,
-        "max_temperature": 33,
-        "default_range": "28°C a 33°C",
+        "min_temperature": 29,
+        "max_temperature": 31,
+        "default_range": "29°C a 31°C",
     },
 }
 
